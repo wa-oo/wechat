@@ -17,6 +17,13 @@ public class WechatController {
 
     private final String token = "wangtao";
 
+    /**
+     * 信息校验
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     @RequestMapping("/h")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("开始签名校验");
