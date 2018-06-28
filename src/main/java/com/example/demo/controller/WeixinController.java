@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.util.Decript;
+import com.example.demo.util.MessageUtil;
+import org.dom4j.DocumentException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/wechat")
@@ -47,6 +50,26 @@ public class WeixinController {
             response.getWriter().println(echostr); //如果检验成功输出echostr，微信服务器接收到此输出，才会确认检验完成。
         } else {
             System.out.println("签名校验失败。");
+        }
+    }
+
+    /**
+     * 接受公众号传来的信息
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    @RequestMapping(value = "/h")
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            Map<String,String> map = MessageUtil.xmlTiMap(request);
+            String fromUserName = map.get("FromUserName");
+            String toUserName = map.get("ToUserName");
+            String msgType = map.get("MsgType");
+            String content = map.get("Content");
+        } catch (DocumentException e) {
+            e.printStackTrace();
         }
     }
 
