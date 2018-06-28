@@ -1,17 +1,21 @@
 package com.example.demo.controller;
 
+import com.example.demo.domain.TextMassage;
 import com.example.demo.util.Decript;
 import com.example.demo.util.MessageUtil;
 import org.dom4j.DocumentException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 
 @Controller
@@ -60,16 +64,41 @@ public class WeixinController {
      * @throws ServletException
      * @throws IOException
      */
-    @RequestMapping(value = "/h")
+    @RequestMapping(value = "/h", method = RequestMethod.POST)
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        //设置字符串格式
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        PrintWriter out = response.getWriter();
+
         try {
             Map<String,String> map = MessageUtil.xmlTiMap(request);
             String fromUserName = map.get("FromUserName");
             String toUserName = map.get("ToUserName");
             String msgType = map.get("MsgType");
             String content = map.get("Content");
+
+            String message = null;
+
+            if (MessageUtil.MESSAGE_TEXT.equals(msgType)){
+                TextMassage text = new TextMassage();
+                text.setFromUserName(toUserName);
+                text.setToUserName(fromUserName);
+                text.setMsgType("text");
+                text.setCreateTime(new Date().getTime());
+                text.setContent("你发送的消息是: " + content);
+                message = MessageUtil.textMessageToXml(text);
+            }else if (MessageUtil.MESSAGE_EVENT.equals(msgType)){
+                //获取事件
+                String eventType = map.get("Event");
+            }
+            out.print(message);
         } catch (DocumentException e) {
             e.printStackTrace();
+        } finally {
+            out.close();
         }
     }
 
