@@ -1,5 +1,7 @@
 package com.example.demo.util;
 
+import com.example.demo.domain.News;
+import com.example.demo.domain.NewsMessage;
 import com.example.demo.domain.TextMassage;
 import com.thoughtworks.xstream.XStream;
 import org.dom4j.Document;
@@ -108,6 +110,19 @@ public class MessageUtil {
         StringBuffer sb = new StringBuffer();
         sb.append("这个公众号主要是用来逗比的");
         return sb.toString();
+    }
+
+    /**
+     * 图文消息转为xml
+     * @param newsMessage
+     * @return
+     */
+    public static String newsMessageToXml(NewsMessage newsMessage){
+        XStream xStream = new XStream();
+        //将消息头设置为xml
+        xStream.alias("xml",newsMessage.getClass());
+        xStream.alias("item",new News().getClass());
+        return xStream.toXML(newsMessage);
     }
 
 }
