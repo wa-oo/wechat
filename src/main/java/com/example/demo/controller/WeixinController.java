@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 @Controller
 @RequestMapping("/wechat")
-public class WechatController {
+public class WeixinController {
 
     private final String token = "wangtao";
 
