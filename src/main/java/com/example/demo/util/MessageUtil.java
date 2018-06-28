@@ -16,8 +16,10 @@ import java.util.*;
 
 public class MessageUtil {
 
+    protected static String PREFIX_CDATA = "<![CDATA[";
+    protected static String SUFFIX_CDATA = "]]>";
     public static final String MESSAGE_TEXT = "text";
-    public static final String MESSAGE_IMAGE = "image";
+    public static final String MESSAGE_IMAGE = "static/images";
     public static final String MESSAGE_VOICE = "voice";
     public static final String MESSAGE_VIDEO = "video";
     public static final String MESSAGE_LINK = "link";
@@ -136,13 +138,13 @@ public class MessageUtil {
         News news = new News();
         news.setTitle("Allen");
         news.setDescription("Allen是王涛的English name,王涛呢,是个很有趣的人");
-        news.setPicUrl("http://95b8e09c.ngrok.io/weixin/src/main/resources/image/image.jpg");
-        news.setUrl("github.com/wangtao-Allen/");
+        news.setPicUrl(cdata("http://95b8e09c.ngrok.io/images/image.jpg"));
+        news.setUrl(cdata("github.com/wangtao-Allen/"));
         newsList.add(news);
-        newsMessage.setToUserName(fromUserName);
-        newsMessage.setFromUserName(toUserName);
+        newsMessage.setToUserName(cdata(fromUserName));
+        newsMessage.setFromUserName(cdata(toUserName));
         newsMessage.setCreateTime(new Date().getTime());
-        newsMessage.setMsgType(MESSAGE_NEWS);
+        newsMessage.setMsgType(cdata(MESSAGE_NEWS));
         newsMessage.setArticle(newsList);
         newsMessage.setArticleCount(newsList.size());
 
@@ -150,4 +152,8 @@ public class MessageUtil {
         return message;
     }
 
+    public static String cdata(String s){
+        s = PREFIX_CDATA+s+SUFFIX_CDATA;
+        return s;
+    }
 }
