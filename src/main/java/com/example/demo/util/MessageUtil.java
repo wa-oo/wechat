@@ -12,10 +12,7 @@ import org.dom4j.io.SAXReader;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MessageUtil {
 
@@ -30,7 +27,7 @@ public class MessageUtil {
     public static final String MESSAGE_UNSUBSCRIBE = "unsubscribe";
     public static final String MESSAGE_CLICK = "CLICK";
     public static final String MESSAGE_VIEW = "VIEW";
-//    public static final String MESSAGE_NEWS = "news";
+    public static final String MESSAGE_NEWS = "news";
 //    public static final String MESSAGE_SHORTVIDEO = "shortvideo";
 //    public static final String MESSAGE_SCANCODE = "scancode_push";
 
@@ -123,6 +120,34 @@ public class MessageUtil {
         xStream.alias("xml",newsMessage.getClass());
         xStream.alias("item",new News().getClass());
         return xStream.toXML(newsMessage);
+    }
+
+    /**
+     * 图文消息的组装
+     * @param toUserName
+     * @param fromUserName
+     * @return
+     */
+    public static String initNewsMessage(String toUserName,String fromUserName){
+        String message = null;
+        List<News> newsList = new ArrayList<News>();
+        NewsMessage newsMessage = new NewsMessage();
+
+        News news = new News();
+        news.setTitle("Allen");
+        news.setDescription("Allen是王涛的English name,王涛呢,是个很有趣的人");
+        news.setPicUrl("http://95b8e09c.ngrok.io/weixin/src/main/resources/image/image.jpg");
+        news.setUrl("github.com/wangtao-Allen/");
+        newsList.add(news);
+        newsMessage.setToUserName(fromUserName);
+        newsMessage.setFromUserName(toUserName);
+        newsMessage.setCreateTime(new Date().getTime());
+        newsMessage.setMsgType(MESSAGE_NEWS);
+        newsMessage.setArticle(newsList);
+        newsMessage.setArticleCount(newsList.size());
+
+        message = newsMessageToXml(newsMessage);
+        return message;
     }
 
 }

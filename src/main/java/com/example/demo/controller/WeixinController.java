@@ -86,7 +86,7 @@ public class WeixinController {
 
                 //根据用户输入进行判断
                 if ("1".equals(content)){
-                    message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.firstMenu());
+                    message = MessageUtil.initNewsMessage(toUserName,fromUserName);
                 } else if ("2".equals(content)){
                     message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.secondMenu());
                 } else if ("?".equals(content) || "？".equals(content)){
