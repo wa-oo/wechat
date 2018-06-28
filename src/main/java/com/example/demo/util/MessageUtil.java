@@ -10,6 +10,7 @@ import org.dom4j.io.SAXReader;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,4 +69,45 @@ public class MessageUtil {
         xStream.alias("xml",textMassage.getClass());
         return xStream.toXML(textMassage);
     }
+
+
+    /**
+     * 拼接字符
+     * @return
+     */
+    public static String initText(String toUserName,String fromUserName,String content){
+        TextMassage text = new TextMassage();
+        text.setFromUserName(toUserName);
+        text.setToUserName(fromUserName);
+        text.setMsgType(MessageUtil.MESSAGE_TEXT);
+        text.setCreateTime(new Date().getTime());
+        text.setContent(content);
+        return textMessageToXml(text);
+    }
+
+    /**
+     * 主菜单
+     * @return
+     */
+    public static String menuText(){
+    StringBuffer sb = new StringBuffer();
+    sb.append("欢迎你的关注,请按照菜单提示进行操作:\n\n");
+    sb.append("1.Allen介绍\n");
+    sb.append("2.公众号介绍\n\n");
+    sb.append("回复?调出此菜单");
+    return sb.toString();
+    }
+
+    public static String firstMenu(){
+        StringBuffer sb = new StringBuffer();
+        sb.append("Allen是王涛的English name,王涛呢,是个很有趣的人");
+        return sb.toString();
+    }
+
+    public static String secondMenu(){
+        StringBuffer sb = new StringBuffer();
+        sb.append("这个公众号主要是用来逗比的");
+        return sb.toString();
+    }
+
 }

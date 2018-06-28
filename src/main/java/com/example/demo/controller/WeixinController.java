@@ -83,17 +83,25 @@ public class WeixinController {
             String message = null;
 
             if (MessageUtil.MESSAGE_TEXT.equals(msgType)){
-                TextMassage text = new TextMassage();
-                text.setFromUserName(toUserName);
-                text.setToUserName(fromUserName);
-                text.setMsgType("text");
-                text.setCreateTime(new Date().getTime());
-                text.setContent("你发送的消息是: " + content);
-                message = MessageUtil.textMessageToXml(text);
+
+                //根据用户输入进行判断
+                if ("1".equals(content)){
+                    message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.firstMenu());
+                } else if ("2".equals(content)){
+                    message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.secondMenu());
+                } else if ("?".equals(content) || "？".equals(content)){
+                    message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.menuText());
+                }
             }else if (MessageUtil.MESSAGE_EVENT.equals(msgType)){
                 //获取事件
                 String eventType = map.get("Event");
+
+                //关注后的逻辑处理
+                if (MessageUtil.MESSAGE_SUBSCRIBE.equals(eventType)){
+                    message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.menuText());
+                }
             }
+            System.out.println(message);
             out.print(message);
         } catch (DocumentException e) {
             e.printStackTrace();
