@@ -71,7 +71,6 @@ public class MessageUtil {
         return xStream.toXML(textMassage);
     }
 
-
     /**
      * 拼接字符
      * @return
@@ -137,7 +136,7 @@ public class MessageUtil {
 
         News news = new News();
         news.setTitle("Allen");
-        news.setDescription("Allen是王涛的English name,王涛呢,是个很有趣的人");
+        news.setDescription("Allen是English name,Allen呢,是个很有趣的人");
         news.setPicUrl(cdata("http://95b8e09c.ngrok.io/images/image.jpg"));
         news.setUrl(cdata("github.com/wangtao-Allen/"));
         newsList.add(news);
