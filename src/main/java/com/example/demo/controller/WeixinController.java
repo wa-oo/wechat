@@ -91,7 +91,8 @@ public class WeixinController {
                 } else if ("?".equals(content) || "？".equals(content)){
                     message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.menuText());
                 }
-            }else if (MessageUtil.MESSAGE_EVENT.equals(msgType)){
+            } else if (MessageUtil.MESSAGE_EVENT.equals(msgType)){
+
                 //获取事件
                 String eventType = map.get("Event");
 
