@@ -87,7 +87,7 @@ public class WeixinController {
 
                 //根据用户输入进行判断
                 if ("1".equals(content)){
-                    message = MessageUtil.initNewsMessage(toUserName,fromUserName);
+                    message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.firstMenu());
                 } else if ("2".equals(content)){
                     message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.secondMenu());
                 } else if ("?".equals(content) || "？".equals(content)){
@@ -102,9 +102,19 @@ public class WeixinController {
                 //关注后的逻辑处理
                 if (MessageUtil.MESSAGE_SUBSCRIBE.equals(eventType)){
                     message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.menuText());
+                } else if (MessageUtil.MESSAGE_CLICK.equals(eventType)){
+                    message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.menuText());
+                } else if (MessageUtil.MESSAGE_VIEW.equals(eventType)) {
+                    String url = map.get("EventKey");
+                    message = MessageUtil.initText(toUserName,fromUserName,url);
+                } else if (MessageUtil.MESSAGE_SCANCODE.equals(eventType)) {
+                    String key = map.get("EventKey");
+                    message = MessageUtil.initText(toUserName,fromUserName,key);
                 }
+            } else if (MessageUtil.MESSAGE_LOCATION.equals(msgType)) {
+                String label = map.get("Label");
+                message = MessageUtil.initText(toUserName,fromUserName,label);
             }
-            System.out.println(message);
             out.print(message);
         } catch (DocumentException e) {
             e.printStackTrace();

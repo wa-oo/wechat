@@ -33,8 +33,8 @@ public class MessageUtil {
     public static final String MESSAGE_CLICK = "CLICK";
     public static final String MESSAGE_VIEW = "VIEW";
     public static final String MESSAGE_NEWS = "news";
-//    public static final String MESSAGE_SHORTVIDEO = "shortvideo";
-//    public static final String MESSAGE_SCANCODE = "scancode_push";
+    public static final String MESSAGE_SHORTVIDEO = "shortvideo";
+    public static final String MESSAGE_SCANCODE = "scancode_push";
 
     /**
      * xml转为map集合
@@ -103,7 +103,7 @@ public class MessageUtil {
 
     public static String firstMenu(){
         StringBuffer sb = new StringBuffer();
-        sb.append("Allen是王涛的English name,王涛呢,是个很有趣的人");
+        sb.append("Allen是English name,是个很有趣的人");
         return sb.toString();
     }
 
@@ -154,35 +154,9 @@ public class MessageUtil {
         return message;
     }
 
-    public static String cdata(String s){
-        s = PREFIX_CDATA+s+SUFFIX_CDATA;
+    public static String cdata(String str){
+        String s = PREFIX_CDATA+str+SUFFIX_CDATA;
         return s;
-    }
-
-    /**
-     * 组装菜单
-     * @return
-     */
-    public static Menu initMenu(){
-        Menu menu = new Menu();
-        ClickButton button11 = new ClickButton();
-        button11.setName("了解Allen");
-        button11.setType("click");
-        button11.setKey("11");
-
-        ClickButton button12 = new ClickButton();
-        button12.setName("加入Allen");
-        button12.setType("click");
-        button12.setKey("12");
-
-        //将11/12两个button作为二级菜单封装第一个一级菜单
-        Button button1 = new Button();
-        button1.setName("Allen");
-        button1.setSub_button(new Button[]{button11,button12});
-
-        // 将31Button直接作为一级菜单
-        menu.setButton(new Button[]{button1});
-        return menu;
     }
 
 }
