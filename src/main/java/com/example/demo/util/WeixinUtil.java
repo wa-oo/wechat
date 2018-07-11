@@ -1,6 +1,10 @@
 package com.example.demo.util;
 
 import com.example.demo.domain.AccessToken;
+import com.example.demo.domain.menu.Button;
+import com.example.demo.domain.menu.ClickButton;
+import com.example.demo.domain.menu.Menu;
+import com.example.demo.domain.menu.ViewButton;
 import net.sf.json.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -16,12 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WeixinUtil {
-    public final static String APPID = "wx7344d6116c28309e";
-    public final static String APPSECRET = "cb3816d4acabfc0e9256853f5e62d998";
+    public final static String APPID = "wxf3a76b60ea52fd04";
+
+    public final static String APPSECRET = "87599e4032c6e956edc1c95f2dbae8ca";
     // 获取access_token的接口地址（GET） 限200（次/天）
     public final static String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
     // 创建菜单
-    public final static String create_menu_url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
+    public final static String CREATE_MENU_URL = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
     // 存放：1.token，2：获取token的时间,3.过期时间
     public final static Map<String,Object> accessTokenMap = new HashMap<String,Object>();
 
@@ -78,5 +83,51 @@ public class WeixinUtil {
             accessToken.setExpiresIn(jsonObject.getInt("expires_in"));
         }
         return accessToken;
+    }
+
+    /**
+     * 组装菜单
+     * @return
+     */
+    public static Menu initMenu(){
+        Menu menu = new Menu();
+
+        ClickButton button11 = new ClickButton();
+        button11.setName("Click菜单");
+        button11.setType("click");
+        button11.setKey("11");
+
+        ViewButton button21 = new ViewButton();
+        button21.setName("View菜单");
+        button21.setType("view");
+        button21.setUrl("https://github.com/wangtao-Allen");
+
+        ClickButton button31 = new ClickButton();
+        button31.setName("扫码");
+        button31.setType("scancode_push");
+        button31.setKey("31");
+
+        ClickButton button32 = new ClickButton();
+        button32.setName("地理位置");
+        button32.setType("location_select");
+        button32.setKey("32");
+
+        Button button3 = new Button();
+        button3.setName("功能菜单");
+        button3.setSub_button(new Button[]{button31,button32});
+
+        menu.setButton(new Button[]{button11,button21,button3});
+
+        return menu;
+    }
+
+    public static int createMenu(String accessToken,String menu) throws IOException {
+        int result = 0;
+        String url = CREATE_MENU_URL.replace("ACCESS_TOKEN",accessToken);
+        JSONObject jsonObject = doPostStr(url,menu);
+        if (jsonObject != null) {
+            result = jsonObject.getInt("errcode");
+        }
+        return result;
     }
 }

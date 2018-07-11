@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.domain.AccessToken;
 import com.example.demo.util.WeixinUtil;
+import net.sf.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,15 +15,18 @@ import java.io.IOException;
 public class DemoApplicationTests {
 
 	@Test
-	public void contextLoads() {
-
-	}
-
-	@Test
 	public void getAccessToken() throws IOException {
 		AccessToken accessToken = WeixinUtil.getAccessToken();
 		System.out.println("access_token = "+accessToken.getToken());
 		System.out.println("expires_in = "+accessToken.getExpiresIn());
+
+		String menu = JSONObject.fromObject(WeixinUtil.initMenu()).toString();
+		int result = WeixinUtil.createMenu(accessToken.getToken(),menu);
+		if (result == 0){
+			System.out.println("创建菜单成功");
+		}else {
+			System.out.println("错误码:" + result);
+		}
 	}
 
 }
