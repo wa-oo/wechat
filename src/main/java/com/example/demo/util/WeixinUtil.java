@@ -121,6 +121,13 @@ public class WeixinUtil {
         return menu;
     }
 
+    /**
+     * 创建菜单
+     * @param accessToken
+     * @param menu
+     * @return
+     * @throws IOException
+     */
     public static int createMenu(String accessToken,String menu) throws IOException {
         int result = 0;
         String url = CREATE_MENU_URL.replace("ACCESS_TOKEN",accessToken);
