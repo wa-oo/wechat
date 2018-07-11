@@ -3,6 +3,9 @@ package com.example.demo.util;
 import com.example.demo.domain.News;
 import com.example.demo.domain.NewsMessage;
 import com.example.demo.domain.TextMassage;
+import com.example.demo.domain.menu.Button;
+import com.example.demo.domain.menu.ClickButton;
+import com.example.demo.domain.menu.Menu;
 import com.thoughtworks.xstream.XStream;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -155,4 +158,31 @@ public class MessageUtil {
         s = PREFIX_CDATA+s+SUFFIX_CDATA;
         return s;
     }
+
+    /**
+     * 组装菜单
+     * @return
+     */
+    public static Menu initMenu(){
+        Menu menu = new Menu();
+        ClickButton button11 = new ClickButton();
+        button11.setName("了解Allen");
+        button11.setType("click");
+        button11.setKey("11");
+
+        ClickButton button12 = new ClickButton();
+        button12.setName("加入Allen");
+        button12.setType("click");
+        button12.setKey("12");
+
+        //将11/12两个button作为二级菜单封装第一个一级菜单
+        Button button1 = new Button();
+        button1.setName("Allen");
+        button1.setSub_button(new Button[]{button11,button12});
+
+        // 将31Button直接作为一级菜单
+        menu.setButton(new Button[]{button1});
+        return menu;
+    }
+
 }
