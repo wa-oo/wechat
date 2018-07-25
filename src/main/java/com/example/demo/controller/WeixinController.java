@@ -145,5 +145,4 @@ public class WeixinController {
         return sbuilder.toString();
     }
 
-
 }

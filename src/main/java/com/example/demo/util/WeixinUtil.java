@@ -1,49 +1,36 @@
 package com.example.demo.util;
 
 import com.example.demo.domain.AccessToken;
+import com.example.demo.domain.UserInfo;
 import com.example.demo.domain.menu.Button;
 import com.example.demo.domain.menu.ClickButton;
 import com.example.demo.domain.menu.Menu;
 import com.example.demo.domain.menu.ViewButton;
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.X509TrustManager;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WeixinUtil {
-    public final static String APPID = "wxf3a76b60ea52fd04";
+    public final static String APPID = "wx139f89139d0670e9";
 
-    public final static String APPSECRET = "87599e4032c6e956edc1c95f2dbae8ca";
+    public final static String APPSECRET = "f51af4f64f433bf606e3ec493074a65d";
     // 获取access_token的接口地址（GET） 限200（次/天）
     public final static String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
     // 创建菜单
@@ -79,11 +66,11 @@ public class WeixinUtil {
      * @return
      * @throws IOException
      */
-    public static JSONObject doPostStr(String url,String outStr) throws IOException {
+    public static JSONObject doPostStr(String url,JSONObject outStr) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(url);
         JSONObject jsonObject = null;
-        httpPost.setEntity(new StringEntity(outStr,"UTF-8"));
+        httpPost.setEntity(new StringEntity(String.valueOf(outStr),"UTF-8"));
         HttpResponse httpResponse = httpClient.execute(httpPost);
         String result = EntityUtils.toString(httpResponse.getEntity(),"UTF-8");
         jsonObject = JSONObject.fromObject(result);
@@ -152,7 +139,7 @@ public class WeixinUtil {
     public static int createMenu(String accessToken,String menu) throws IOException {
         int result = 0;
         String url = CREATE_MENU_URL.replace("ACCESS_TOKEN",accessToken);
-        JSONObject jsonObject = doPostStr(url,menu);
+        JSONObject jsonObject = doPostStr(url, JSONObject.fromObject(menu));
         if (jsonObject != null) {
             result = jsonObject.getInt("errcode");
         }
@@ -170,7 +157,7 @@ public class WeixinUtil {
         try {
             File file = new File(fileurl);
             //上传素材
-            String path = "https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=" + token + "&type=" + type;
+            String path = "http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=" + token + "&type=" + type;
             String result = connectHttpsByPost(path, null, file);
             result = result.replaceAll("[\\\\]", "");
             System.out.println("result:" + result);
@@ -266,8 +253,166 @@ public class WeixinUtil {
                 reader.close();
             }
         }
+        System.out.println("result---" + result);
+        return result;
+
+    }
+
+    /**
+     * 获取公众号关注的用户openid
+     * @return
+     */
+    public List<String> getUserOpenId(String access_token)//, String nextOpenid
+    {
+        // String path = "https://api.weixin.qq.com/cgi-bin/user/get?access_token=ACCESS_TOKEN&next_openid=NEXT_OPENID";
+        String path = "https://api.weixin.qq.com/cgi-bin/user/get?access_token=ACCESS_TOKEN";
+        path = path.replace("ACCESS_TOKEN", access_token);//.replace("NEXT_OPENID", nextOpenid)
+        System.out.println("path:" + path);
+
+        List<String> result = null;
+        try
+        {
+            JSON strResp = WeixinUtil.doGetStr(path);
+            System.out.println(strResp);
+
+            JSONObject  jasonObject = JSONObject.fromObject(strResp);
+            Map map = (Map)jasonObject;
+            Map tmapMap = (Map) map.get("data");
+
+            result = (List<String>) tmapMap.get("openid");
+
+        } catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         return result;
     }
 
+    /**
+     * 通过用户openid 获取用户信息
+     * @param userOpenids
+     * @return
+     */
+    public List<UserInfo> getUserInfo(List<String> userOpenids) throws IOException {
+        // 1、获取access_token
+        // 使用测试 wx9015ccbcccf8d2f5 02e3a6877fa5fdeadd78d0f6f3048245
+        AccessToken token = WeixinUtil.getAccessToken();
+        String tAccess_Token = token.getToken();
+        // 2、封装请求数据
+        List user_list = new ArrayList<Map>();
+        for (int i = 0; i < userOpenids.size(); i++)
+        {
+            String openid = userOpenids.get(i);
+            Map tUserMap = new HashMap<String, String>();
+            tUserMap.put("openid", openid);
+            tUserMap.put("lang", "zh_CN");
+            user_list.add(tUserMap);
+        }
+        System.out.println(user_list.toString());
+        Map requestMap = new HashMap<String, List>();
+        requestMap.put("user_list", user_list);
+        String tUserJSON = JSONObject.fromObject(requestMap).toString();
 
+        // 3、请求调用
+        JSON result = getUserInfobyHttps(tAccess_Token, tUserJSON);
+
+        JSONObject  jasonObject = JSONObject.fromObject(result);
+        String tMapData = jasonObject.toString();
+
+        System.out.println(result);
+
+        // 4、解析返回将结果
+        return parseUserInfo(tMapData);
+    }
+
+    /**
+     * 解析返回用户信息数据
+     * @param userInfoJSON
+     * @return
+     */
+    private List<UserInfo> parseUserInfo(String userInfoJSON)
+    {
+        List user_info_list = new ArrayList<UserInfo>();
+
+        JSONObject  jasonObject = JSONObject.fromObject(userInfoJSON);
+        Map tMapData = (Map)jasonObject;
+
+        List<Map> tUserMaps = (List<Map>) tMapData.get("user_info_list");
+
+        for (int i = 0; i < tUserMaps.size(); i++)
+        {
+            UserInfo tUserInfo = new UserInfo();
+            tUserInfo.setSubscribe((Integer) tUserMaps.get(i).get("subscribe"));
+            tUserInfo.setSex((Integer) tUserMaps.get(i).get("sex"));
+            tUserInfo.setOpenId((String) tUserMaps.get(i).get("openid"));
+            tUserInfo.setNickname((String) tUserMaps.get(i).get("nickname"));
+            tUserInfo.setLanguage((String) tUserMaps.get(i).get("language"));
+            tUserInfo.setCity((String) tUserMaps.get(i).get("city"));
+            tUserInfo.setProvince((String) tUserMaps.get(i).get("province"));
+            tUserInfo.setCountry((String) tUserMaps.get(i).get("country"));
+            tUserInfo.setHeadimgurl((String) tUserMaps.get(i).get("headimgurl"));
+            tUserInfo.setSubscribetime((Integer) tUserMaps.get(i).get("subscribe_time"));
+            tUserInfo.setRemark((String) tUserMaps.get(i).get("remark"));
+            tUserInfo.setGroupid((Integer) tUserMaps.get(i).get("groupid"));
+            user_info_list.add(tUserInfo);
+        }
+
+        return user_info_list;
+    }
+
+    /**
+     * 调用HTTPS接口，获取用户详细信息
+     * @param access_token
+     * @param requestData
+     * @return
+     */
+    private JSON getUserInfobyHttps(String access_token, String requestData)
+    {
+        // 返回报文
+        JSON strResp = null;
+        String path = "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=ACCESS_TOKEN";
+        path = path.replace("ACCESS_TOKEN", access_token);
+
+        try
+        {
+            strResp = WeixinUtil.doPostStr(path, JSONObject.fromObject(requestData));
+            JSONObject  jasonObject = JSONObject.fromObject(strResp);
+            System.out.println("strResp---"+strResp.toString());
+
+        } catch (IOException e)
+        {
+            // 发生网络异常
+            System.out.println(e);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+        }
+        finally
+        {}
+        return strResp;
+    }
+
+    // /**
+    //  * 消息推送
+    //  */
+    // public static MessageImageText outMessageText() throws IOException {
+    //     MessageImageText imageText = new MessageImageText();
+    //     Mpnews mpnews = new Mpnews();
+    //
+    //     WeixinUtil weixinUtil = new WeixinUtil();
+    //     AccessToken token = weixinUtil.getAccessToken();
+    //     List list =  weixinUtil.getUserOpenId(token.getToken());
+    //
+    //     mpnews.setMedia_id("4H7Dn04swNqzmUcNwYmhhOufHYq_I2EE_jqgAgzPnONcjnkILYl8znJ9FyCHgiGu");
+    //
+    //     imageText.setTouser(list);
+    //     imageText.setMpnews(mpnews);
+    //     imageText.setMsgtype("mpnews");
+    //     imageText.setSend_ignore_reprint("0");
+    //
+    //     return imageText;
+    // }
 }
