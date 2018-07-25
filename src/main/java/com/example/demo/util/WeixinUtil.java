@@ -395,24 +395,4 @@ public class WeixinUtil {
         return strResp;
     }
 
-    // /**
-    //  * 消息推送
-    //  */
-    // public static MessageImageText outMessageText() throws IOException {
-    //     MessageImageText imageText = new MessageImageText();
-    //     Mpnews mpnews = new Mpnews();
-    //
-    //     WeixinUtil weixinUtil = new WeixinUtil();
-    //     AccessToken token = weixinUtil.getAccessToken();
-    //     List list =  weixinUtil.getUserOpenId(token.getToken());
-    //
-    //     mpnews.setMedia_id("4H7Dn04swNqzmUcNwYmhhOufHYq_I2EE_jqgAgzPnONcjnkILYl8znJ9FyCHgiGu");
-    //
-    //     imageText.setTouser(list);
-    //     imageText.setMpnews(mpnews);
-    //     imageText.setMsgtype("mpnews");
-    //     imageText.setSend_ignore_reprint("0");
-    //
-    //     return imageText;
-    // }
 }

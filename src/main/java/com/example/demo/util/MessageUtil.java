@@ -136,7 +136,7 @@ public class MessageUtil {
 
         News news = new News();
         news.setTitle("Allen");
-        news.setDescription("Allen是English name,Allen呢,是个很有趣的人");
+        news.setDescription("Allen是English name");
         news.setPicUrl(cdata("http://95b8e09c.ngrok.io/images/image.jpg"));
         news.setUrl(cdata("github.com/wangtao-Allen/"));
         newsList.add(news);
