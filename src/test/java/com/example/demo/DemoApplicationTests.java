@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.controller.WeiXinApi;
 import com.example.demo.domain.AccessToken;
 import com.example.demo.util.WeixinUtil;
 import net.sf.json.JSONObject;
@@ -28,5 +29,23 @@ public class DemoApplicationTests {
 			System.out.println("错误码:" + result);
 		}
 	}
+
+	@Test
+	public void uploadFodderController() throws IOException {
+
+		AccessToken token = WeixinUtil.getAccessToken();
+		// String path = "D:/image.jpg";
+		// JSONObject object = addMaterialEver(path,"image",token.getToken());
+		// System.out.println(object.toString());
+
+		System.out.println("---");
+
+		WeiXinApi weiXinApi = new WeiXinApi();
+		// weiXinApi.initWebClient();
+		weiXinApi.sendMessage(token.getToken(),"ssssssssssss");
+	}
+
+
+
 
 }

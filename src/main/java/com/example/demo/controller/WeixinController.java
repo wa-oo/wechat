@@ -1,11 +1,9 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.TextMassage;
 import com.example.demo.util.Decript;
 import com.example.demo.util.MessageUtil;
-import com.sun.deploy.net.HttpResponse;
+import com.example.demo.util.WeixinUtil;
 import org.dom4j.DocumentException;
-import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,6 +22,10 @@ import java.util.Map;
 public class WeixinController {
 
     private final String token = "wangtao";
+    // 上传多媒体文件
+    public static final String UPLOAD_IMAGE_URL = "http://file.api.weixin.qq.com/cgi-bin/media/upload";
+    public static final String UPLOAD_FODDER_URL = "https://api.weixin.qq.com/cgi-bin/media/uploadnews";
+
 
     /**
      * 信息校验
@@ -106,10 +108,12 @@ public class WeixinController {
                     message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.menuText());
                 } else if (MessageUtil.MESSAGE_VIEW.equals(eventType)) {
                     String url = map.get("EventKey");
-                    message = MessageUtil.initText(toUserName,fromUserName,url);
+                    System.out.println(url);
+//                    message = MessageUtil.initText(toUserName,fromUserName,url);
                 } else if (MessageUtil.MESSAGE_SCANCODE.equals(eventType)) {
                     String key = map.get("EventKey");
-                    message = MessageUtil.initText(toUserName,fromUserName,key);
+                    System.out.println(key);
+//                    message = MessageUtil.initText(toUserName,fromUserName,key);
                 }
             } else if (MessageUtil.MESSAGE_LOCATION.equals(msgType)) {
                 String label = map.get("Label");
@@ -121,6 +125,11 @@ public class WeixinController {
         } finally {
             out.close();
         }
+    }
+
+    public void uploadFodderController() throws IOException {
+        String acctessToken = WeixinUtil.getAccessToken().getToken();
+        System.out.println(acctessToken);
     }
 
     //排序方法
