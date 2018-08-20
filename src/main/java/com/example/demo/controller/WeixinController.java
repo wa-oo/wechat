@@ -26,7 +26,6 @@ public class WeixinController {
     public static final String UPLOAD_IMAGE_URL = "http://file.api.weixin.qq.com/cgi-bin/media/upload";
     public static final String UPLOAD_FODDER_URL = "https://api.weixin.qq.com/cgi-bin/media/uploadnews";
 
-
     /**
      * 信息校验
      * @param request
@@ -82,11 +81,10 @@ public class WeixinController {
             String toUserName = map.get("ToUserName");
             String msgType = map.get("MsgType");
             String content = map.get("Content");
-
             String message = null;
 
             if (MessageUtil.MESSAGE_TEXT.equals(msgType)){
-
+                System.out.println("-------------------");
                 //根据用户输入进行判断
                 if ("1".equals(content)){
                     message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.firstMenu());

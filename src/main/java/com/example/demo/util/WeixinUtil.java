@@ -8,12 +8,18 @@ import com.example.demo.domain.menu.Menu;
 import com.example.demo.domain.menu.ViewButton;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+//import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import java.io.*;
@@ -28,9 +34,9 @@ import java.util.List;
 import java.util.Map;
 
 public class WeixinUtil {
-    public final static String APPID = "wx139f89139d0670e9";
+    public final static String APPID = "wxf3a76b60ea52fd04";
 
-    public final static String APPSECRET = "f51af4f64f433bf606e3ec493074a65d";
+    public final static String APPSECRET = "87599e4032c6e956edc1c95f2dbae8ca";
     // 获取access_token的接口地址（GET） 限200（次/天）
     public final static String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
     // 创建菜单
@@ -101,12 +107,12 @@ public class WeixinUtil {
         Menu menu = new Menu();
 
         ClickButton button11 = new ClickButton();
-        button11.setName("Click菜单");
+        button11.setName("Click1");
         button11.setType("click");
         button11.setKey("11");
 
         ViewButton button21 = new ViewButton();
-        button21.setName("View菜单");
+        button21.setName("View1");
         button21.setType("view");
         button21.setUrl("https://github.com/wangtao-Allen");
 
@@ -121,7 +127,7 @@ public class WeixinUtil {
         button32.setKey("32");
 
         Button button3 = new Button();
-        button3.setName("功能菜单");
+        button3.setName("功能1");
         button3.setSub_button(new Button[]{button31,button32});
 
         menu.setButton(new Button[]{button11,button21,button3});
@@ -395,4 +401,209 @@ public class WeixinUtil {
         return strResp;
     }
 
+    // 发送模板消息
+    public JSONObject sendMsg(String openid) throws IOException {
+        getAccessToken();
+        String url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=ACCESS_TOKEN";
+        url = url.replace("ACCESS_TOKEN", String.valueOf(getAccessToken()));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("touser", openid); // 接收方的openid
+        jsonObject.put("template_id", "mxznKzAIUvjnOOjjs43ACErzuo7SdTkUd6zRkG2gRBI"); // 模板id
+        jsonObject.put("url", "www.baidu.com"); // 用户点击消息跳转的路径
+        JSONObject firstObj = new JSONObject();
+        firstObj.put("value", "恭喜您报名成功！\n");
+        firstObj.put("color", "#173177");
+        JSONObject realNameObj = new JSONObject();
+        realNameObj.put("value", "刘立庆\n");
+        realNameObj.put("color", "#173177");
+        JSONObject phoneObj = new JSONObject();
+        phoneObj.put("value", "17621216043");
+        phoneObj.put("color", "#173177");
+        JSONObject dataObj = new JSONObject();
+        dataObj.put("first", firstObj);
+        dataObj.put("realName", realNameObj);
+        dataObj.put("phone", phoneObj);
+        jsonObject.put("data", dataObj);
+        JSONObject json = postJson(url, jsonObject);
+        return json;
+    }
+
+    public static JSONObject postJson(String url, JSONObject json) throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(url);
+        StringEntity stringEntity = new StringEntity(json.toString(), "UTF-8");
+        stringEntity.setContentEncoding("UTF-8");
+        stringEntity.setContentType("application/json");
+        httpPost.setEntity(stringEntity);
+        CloseableHttpResponse response = httpClient.execute(httpPost);
+        String res = "{}";
+        if (response.getStatusLine().getStatusCode() == 200) {
+            HttpEntity entity = response.getEntity();
+            res = EntityUtils.toString(entity, "UTF-8");
+        }
+        return JSONObject.fromObject(res);
+    }
+
+    public static JSONObject postForm(String url, Map<String, String> params) throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(url);
+        List<BasicNameValuePair> pairList = new ArrayList<>();
+        if (null != params && !params.isEmpty()) {
+            params.entrySet().forEach(entry -> {
+                pairList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+            });
+        }
+        httpPost.setEntity(new UrlEncodedFormEntity(pairList, "UTF-8"));
+        CloseableHttpResponse response = httpClient.execute(httpPost);
+        String res = "{}";
+        if (response.getStatusLine().getStatusCode() == 200) {
+            HttpEntity entity = response.getEntity();
+            res = EntityUtils.toString(entity, "UTF-8");
+        }
+        return JSONObject.fromObject(res);
+    }
+
+    static class MessageDto implements Serializable {
+
+        private static final long serialVersionUID = -5230258930971849513L;
+        private String URL;
+        private String ToUserName;
+        private String FromUserName;
+        private long CreateTime;
+        private String MsgType;
+        private String Event;
+        private String Latitude;
+        private String Longitude;
+        private String Precision;
+        private long MsgId;
+        private String EventKey;
+        private String Ticket;
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("{");
+            sb.append("\"URL\":\"")
+                    .append(URL).append('\"');
+            sb.append(",\"ToUserName\":\"")
+                    .append(ToUserName).append('\"');
+            sb.append(",\"FromUserName\":\"")
+                    .append(FromUserName).append('\"');
+            sb.append(",\"CreateTime\":")
+                    .append(CreateTime);
+            sb.append(",\"MsgType\":\"")
+                    .append(MsgType).append('\"');
+            sb.append(",\"Event\":\"")
+                    .append(Event).append('\"');
+            sb.append(",\"Latitude\":\"")
+                    .append(Latitude).append('\"');
+            sb.append(",\"Longitude\":\"")
+                    .append(Longitude).append('\"');
+            sb.append(",\"Precision\":\"")
+                    .append(Precision).append('\"');
+            sb.append(",\"MsgId\":")
+                    .append(MsgId);
+            sb.append(",\"EventKey\":\"")
+                    .append(EventKey).append('\"');
+            sb.append(",\"Ticket\":\"")
+                    .append(Ticket).append('\"');
+            sb.append('}');
+            return sb.toString();
+        }
+
+        public String getURL() {
+            return URL;
+        }
+
+        public void setURL(String URL) {
+            this.URL = URL;
+        }
+
+        public String getToUserName() {
+            return ToUserName;
+        }
+
+        public void setToUserName(String toUserName) {
+            ToUserName = toUserName;
+        }
+
+        public String getFromUserName() {
+            return FromUserName;
+        }
+
+        public void setFromUserName(String fromUserName) {
+            FromUserName = fromUserName;
+        }
+
+        public long getCreateTime() {
+            return CreateTime;
+        }
+
+        public void setCreateTime(long createTime) {
+            CreateTime = createTime;
+        }
+
+        public String getMsgType() {
+            return MsgType;
+        }
+
+        public void setMsgType(String msgType) {
+            MsgType = msgType;
+        }
+
+        public String getEvent() {
+            return Event;
+        }
+
+        public void setEvent(String event) {
+            Event = event;
+        }
+
+        public String getLatitude() {
+            return Latitude;
+        }
+
+        public void setLatitude(String latitude) {
+            Latitude = latitude;
+        }
+
+        public String getLongitude() {
+            return Longitude;
+        }
+
+        public void setLongitude(String longitude) {
+            Longitude = longitude;
+        }
+
+        public String getPrecision() {
+            return Precision;
+        }
+
+        public void setPrecision(String precision) {
+            Precision = precision;
+        }
+
+        public long getMsgId() {
+            return MsgId;
+        }
+
+        public void setMsgId(long msgId) {
+            MsgId = msgId;
+        }
+
+        public String getEventKey() {
+            return EventKey;
+        }
+
+        public void setEventKey(String eventKey) {
+            EventKey = eventKey;
+        }
+
+        public String getTicket() {
+            return Ticket;
+        }
+
+        public void setTicket(String ticket) {
+            Ticket = ticket;
+        }
+    }
 }
